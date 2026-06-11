@@ -150,7 +150,7 @@ document.getElementById('overlay').style.display='flex';
 
 // ── Config ────────────────────────────────────────────────────────────────
 const C={
-  worldSz:140, tSegs:60, spd:8, jumpF:7.5, grav:20,
+  worldSz:140, tSegs:60, spd:8, jumpF:10, grav:20,
   camD:6.5, camH:1.7,
   atkR:3.8, atkCd:.65, atkDmg:[14,22],
   fireCd:2.0, fireMp:15, fireDmg:[26,36], fireSpd:22,
@@ -213,7 +213,7 @@ addEventListener('keydown',e=>{
   if(e.code==='Space'){
     e.preventDefault();
     if(!G.dead&&G.onGnd&&document.getElementById('shopOv').style.display==='none'&&document.getElementById('overlay').style.display==='none')
-      {G.velY=C.jumpF;G.onGnd=false;G.jumpImpulse=true;}
+      {G.velY=C.jumpF;G.onGnd=false;}
   }
   if(e.code==='Enter'||e.code==='NumpadEnter'){
     if(document.getElementById('shopOv').style.display!=='none')return;
@@ -286,7 +286,7 @@ function pollGamepad(dt){
     if(document.getElementById('overlay').style.display!=='none'){startGame();}
     else if(document.getElementById('shopOv').style.display!=='none'){/* buy highlighted */}
     else if(G.dead){restartGame();}
-    else if(G.onGnd&&!G.dead){G.velY=C.jumpF;G.onGnd=false;G.jumpImpulse=true;}
+    else if(G.onGnd&&!G.dead){G.velY=C.jumpF;G.onGnd=false;}
   }
   // X (2) → sword
   if(gpJust(gp,2))meleeAtk();
@@ -1140,12 +1140,10 @@ function updPlayer(dt){
     }
   }
 
-  if(G.jumpImpulse){G.jumpImpulse=false;}
-  else G.velY-=C.grav*dt;
+  G.velY-=C.grav*dt;
   p.position.y+=G.velY*dt;
   const ground=tH(p.position.x,p.position.z);
-  if(p.position.y<=ground&&G.velY<=0){p.position.y=ground;G.velY=0;G.onGnd=true;}
-  else if(p.position.y>ground+0.05)G.onGnd=false;
+  if(p.position.y<=ground){p.position.y=ground;G.velY=0;G.onGnd=true;}
 
   const hs=C.worldSz/2-5;
   p.position.x=Math.max(-hs,Math.min(hs,p.position.x));
