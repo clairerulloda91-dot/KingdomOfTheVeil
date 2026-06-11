@@ -177,17 +177,17 @@ const WORLDS=[
   {name:'Enchanted Kingdom', bg:0x5588CC, fogC:0x99BBDD, fogD:.008,
    gnd:0x3A7A2A, skyC:0x88AAEE, gndC:0x336622, aI:1.2, sunC:0xFFEECC, sunI:1.4,
    mush:true, cryst:false, portX:35},
-  {name:'Darkwood Forest',   bg:0x0E1A0E, fogC:0x0E1A0E, fogD:.018,
-   gnd:0x1E3A1A, skyC:0x223322, gndC:0x1A2E12, aI:0.8, sunC:0xAABB88, sunI:0.6,
+  {name:'Darkwood Forest',   bg:0x1A2E1A, fogC:0x1A2E1A, fogD:.011,
+   gnd:0x2A5A20, skyC:0x2A4422, gndC:0x2A3E18, aI:1.1, sunC:0xCCDD88, sunI:1.0,
    mush:true, cryst:false, portX:35},
-  {name:'Crystal Caverns',   bg:0x050515, fogC:0x050518, fogD:.020,
-   gnd:0x1A2A3A, skyC:0x112244, gndC:0x0d1e2d, aI:0.7, sunC:0x8899DD, sunI:0.5,
+  {name:'Crystal Caverns',   bg:0x0A0A28, fogC:0x0A0A2E, fogD:.012,
+   gnd:0x1A2A4A, skyC:0x1A2266, gndC:0x121e3d, aI:1.1, sunC:0xAABBFF, sunI:1.0,
    mush:false, cryst:true, portX:35},
   {name:'Sky Citadel',       bg:0x1A3A66, fogC:0x2244AA, fogD:.010,
-   gnd:0x335577, skyC:0x6688BB, gndC:0x224466, aI:1.1, sunC:0xFFEECC, sunI:1.2,
+   gnd:0x335577, skyC:0x6688BB, gndC:0x224466, aI:1.2, sunC:0xFFEECC, sunI:1.4,
    mush:false, cryst:true, portX:35},
-  {name:'Shadow Realm',      bg:0x050005, fogC:0x050005, fogD:.025,
-   gnd:0x1A0A1A, skyC:0x220022, gndC:0x120010, aI:0.5, sunC:0xFF3333, sunI:0.4,
+  {name:'Shadow Realm',      bg:0x120010, fogC:0x120010, fogD:.015,
+   gnd:0x2A102A, skyC:0x330033, gndC:0x1E081E, aI:0.9, sunC:0xFF4444, sunI:0.8,
    mush:true, cryst:false, portX:null},
 ];
 
@@ -210,6 +210,11 @@ addEventListener('keydown',e=>{
   G.keys[e.code]=true;
   if(e.code==='KeyF')castFire();
   if(e.code==='KeyE')castLt();
+  if(e.code==='Space'){
+    e.preventDefault();
+    if(!G.dead&&G.onGnd&&document.getElementById('shopOv').style.display==='none'&&document.getElementById('overlay').style.display==='none')
+      {G.velY=C.jumpF;G.onGnd=false;G.jumpImpulse=true;}
+  }
   if(e.code==='Enter'||e.code==='NumpadEnter'){
     if(document.getElementById('shopOv').style.display!=='none')return;
     if(document.getElementById('popup').style.display!=='none')popupAction();
@@ -281,7 +286,7 @@ function pollGamepad(dt){
     if(document.getElementById('overlay').style.display!=='none'){startGame();}
     else if(document.getElementById('shopOv').style.display!=='none'){/* buy highlighted */}
     else if(G.dead){restartGame();}
-    else if(G.onGnd&&!G.dead){G.velY=C.jumpF;G.onGnd=false;}
+    else if(G.onGnd&&!G.dead){G.velY=C.jumpF;G.onGnd=false;G.jumpImpulse=true;}
   }
   // X (2) → sword
   if(gpJust(gp,2))meleeAtk();
@@ -1135,11 +1140,12 @@ function updPlayer(dt){
     }
   }
 
-  if(G.keys.Space&&G.onGnd){G.velY=C.jumpF;G.onGnd=false;}
-  G.velY-=C.grav*dt;
+  if(G.jumpImpulse){G.jumpImpulse=false;}
+  else G.velY-=C.grav*dt;
   p.position.y+=G.velY*dt;
   const ground=tH(p.position.x,p.position.z);
-  if(p.position.y<=ground){p.position.y=ground;G.velY=0;G.onGnd=true;}
+  if(p.position.y<=ground&&G.velY<=0){p.position.y=ground;G.velY=0;G.onGnd=true;}
+  else if(p.position.y>ground+0.05)G.onGnd=false;
 
   const hs=C.worldSz/2-5;
   p.position.x=Math.max(-hs,Math.min(hs,p.position.x));
