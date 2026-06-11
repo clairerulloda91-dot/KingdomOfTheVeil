@@ -212,7 +212,7 @@ addEventListener('keydown',e=>{
   if(e.code==='KeyE')castLt();
   if(e.code==='Space'){
     e.preventDefault();
-    if(!G.dead&&G.onGnd&&document.getElementById('shopOv').style.display==='none'&&document.getElementById('overlay').style.display==='none')
+    if(!G.dead&&G.onGnd&&document.getElementById('shopOv').style.display==='none'&&document.getElementById('overlay').style.display==='none'&&document.getElementById('popup').style.display==='none')
       {G.velY=C.jumpF;G.onGnd=false;}
   }
   if(e.code==='Enter'||e.code==='NumpadEnter'){
@@ -285,6 +285,7 @@ function pollGamepad(dt){
   if(gpJust(gp,0)){
     if(document.getElementById('overlay').style.display!=='none'){startGame();}
     else if(document.getElementById('shopOv').style.display!=='none'){/* buy highlighted */}
+    else if(document.getElementById('popup').style.display!=='none'){popupAction();}
     else if(G.dead){restartGame();}
     else if(G.onGnd&&!G.dead){G.velY=C.jumpF;G.onGnd=false;}
   }
@@ -963,7 +964,7 @@ function loadWorld(idx){
   if(w.portX!=null)mkPortal(w.portX,0);
   // magic circles
   for(let i=0;i<5;i++){const a=Math.random()*Math.PI*2,r=8+Math.random()*35;mkMagicCircle(Math.cos(a)*r,Math.sin(a)*r,[0x4488FF,0xAA44FF,0xFF4444,0x44FFAA][Math.floor(Math.random()*4)]);}
-  G.player.position.set(0,tH(0,0),0); G.velY=0;
+  G.player.position.set(0,tH(0,0),0); G.velY=0; G.onGnd=true;
   updHUD(); showPopup('✦ '+w.name+' ✦', wFlavour(w.name)+'\n\nPress Enter / A to continue');
 }
 function wFlavour(n){return({
